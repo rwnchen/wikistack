@@ -33,7 +33,7 @@ app.get("/", async (req, res, next) => {
 
 const init = async () => {
   await db.sync({
-    // force: true
+    force: true
   });
 
   app.listen(PORT, () => {

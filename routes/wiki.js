@@ -22,12 +22,21 @@ router.get('/', (req, res, next) => {
 router.post('/', async (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
-
+  const author = req.body.author;
   const page = new Page({
     title: title,
-    content: content
+    content: content,
+    author: author
   });
+  const existing = await User.findOrCreate({
+    where: {
+      name: req.body.author
+    }
+  })
 
+  if (existing[1]){
+    page.setOwner(existing)
+  }
   // make sure we only redirect *after* our save is complete!
   // note: `.save` returns a promise.
   try {
