@@ -4,7 +4,8 @@ const {
   addPage
 } = require("../views");
 const {
-  Page
+  Page,
+  User
 } = require("../models");
 
 const wikipage = require("../views/wikipage");
@@ -23,26 +24,25 @@ router.post('/', async (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
   const author = req.body.author;
-  const page = new Page({
-    title: title,
-    content: content,
-    author: author
-  });
-  const existing = await User.findOrCreate({
-    where: {
-      name: req.body.author
-    }
-  })
+  const email = req.body.email;
 
-  if (existing[1]){
-    page.setOwner(existing)
-  }
+
   // make sure we only redirect *after* our save is complete!
   // note: `.save` returns a promise.
   try {
+    const [user, wasCreated] = await User.findOrCreate({
+      where: {
+        name: req.body.author,
+        email: email
+      }
+    })
+
+    const page = await Page.create(req.body);
+
+    page.setAuthor(user);
     await page.save();
 
-    console.log(page);
+    // console.log(page);
     const slug = page.slug;
     res.redirect(`/wiki/${slug}`);
   } catch (error) {
@@ -62,5 +62,8 @@ router.get('/:slug', async (req, res, next) => {
     }
   });
 
-  res.send(wikipage(slugPage));
+  const page = slugPage[0];
+  console.log(page);
+
+  res.send(wikipage(page, page.getAuthor().name));
 })
