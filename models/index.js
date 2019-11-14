@@ -26,8 +26,7 @@ const Page = db.define("pages", {
 });
 
 Page.addHook('beforeValidate', (page, options) => {
-  const regex = /' '/gi;
-  page.slug = page.title.replace(regex, '_');
+  page.slug = generateSlug(page.title);
 })
 
 const User = db.define("users", {
