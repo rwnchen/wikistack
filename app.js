@@ -3,7 +3,8 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const layout = require("./views/layout.js");
 const Sequelize = require("sequelize");
-
+const user = require("./routes/user");
+const wiki = require("./routes/wiki");
 const { db, Page, User } = require("./models");
 
 const app = express();
@@ -16,9 +17,10 @@ db.authenticate().then(() => {
 app.use(morgan("dev"));
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/wiki', wiki);
 
 app.get("/", (req, res, next) => {
-  res.send(layout(""));
+  res.redirect('/wiki');
 });
 
 const init = async () => {
