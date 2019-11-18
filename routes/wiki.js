@@ -63,9 +63,7 @@ router.get('/:slug', async (req, res, next) => {
   });
 
   const page = slugPage[0];
-
   const name = await page.getAuthor();
-  console.log(name);
 
   res.send(wikipage(page, name.name));
 })
